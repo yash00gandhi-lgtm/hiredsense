@@ -25,15 +25,18 @@ from django.views.static import serve
 urlpatterns = [
     path("", RedirectView.as_view(url="/api/dashboard/", permanent=False)),
     path("admin/", admin.site.urls),
+
+    # ✅ THIS LINE WAS MISSING (LOGIN FIX)
+    path("accounts/", include("django.contrib.auth.urls")),
+
     path("api/", include("cored.urls")),
 ]
 
+# media (dev + render)
 urlpatterns += static(
     settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT
 )
-
-
 
 urlpatterns += [
     path("media/<path:path>", serve, {
