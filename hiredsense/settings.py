@@ -154,3 +154,8 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+LOGIN_URL = "/auth/"
+LOGIN_REDIRECT_URL = "/api/dashboard/"
+LOGOUT_REDIRECT_URL = "/auth/"
+

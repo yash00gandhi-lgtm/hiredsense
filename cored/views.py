@@ -17,8 +17,24 @@ from .llm import generate_ai_report
 
 # ===================== PAGES =====================
 
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+
 def auth_page(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=email, password=password)
+
+        if user:
+            login(request, user)
+            return redirect("/api/dashboard/")
+        else:
+            messages.error(request, "Invalid credentials")
+
     return render(request, "auth.html")
+
 
 
 @login_required
