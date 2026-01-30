@@ -155,7 +155,8 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-LOGIN_URL = "/auth/"
+LOGIN_URL = "/api/auth/"
 LOGIN_REDIRECT_URL = "/api/dashboard/"
-LOGOUT_REDIRECT_URL = "/auth/"
+LOGOUT_REDIRECT_URL = "/api/auth/"
+
 
