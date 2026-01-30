@@ -1,0 +1,305 @@
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #f6f8fb;
+    --card: #ffffff;
+    --text: #0f172a;        /* deep navy */
+    --muted: #64748b;       /* slate */
+    --brand: #0ea5a4;       /* calm teal */
+    --brand2:#2563eb;       /* subtle blue */
+    --border:#e5e7eb; 
+    --shadow: 0 20px 60px rgba(2, 6, 23, .08);
+  }
+
+  .sx-wrap{
+    min-height: calc(100vh - 120px); 
+    background:
+      radial-gradient(900px 500px at 10% 10%, rgba(37, 99, 235, .10), transparent 60%),
+      radial-gradient(900px 500px at 90% 20%, rgba(14, 165, 164, .12), transparent 60%),
+      radial-gradient(900px 500px at 50% 100%, rgba(15, 23, 42, .06), transparent 65%),
+      var(--bg);
+    display:flex; align-items:center;
+    padding: 28px 0;
+  }
+  .sx-right{ min-height: 520px; }
+
+
+  .sx-card{
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(229,231,235,.9);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transform: translateY(10px);
+    opacity: 0;
+    animation: sxIn .65s cubic-bezier(.2,.9,.2,1) forwards;
+    backdrop-filter: blur(8px);
+  }
+  @keyframes sxIn{ to { transform: translateY(0); opacity: 1; } }
+
+  .sx-left{
+    padding: 34px 34px 26px;
+  }
+  .sx-right{
+    background:
+      linear-gradient(135deg, rgba(37,99,235,.10), rgba(14,165,164,.10)),
+      radial-gradient(800px 500px at 70% 40%, rgba(14,165,164,.18), transparent 60%),
+      radial-gradient(800px 500px at 30% 60%, rgba(37,99,235,.14), transparent 60%);
+    border-left: 1px solid rgba(229,231,235,.7);
+    padding: 34px;
+    height: 100%;
+  }
+
+  .sx-badge{
+    display:inline-flex; align-items:center; gap:10px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(14,165,164,.10);
+    border: 1px solid rgba(14,165,164,.18);
+    color: var(--text);
+    font-weight: 600;
+  }
+  .sx-dot{
+    width: 10px; height: 10px; border-radius: 999px;
+    background: var(--brand);
+    box-shadow: 0 0 0 6px rgba(14,165,164,.14);
+  }
+
+  .sx-title{ color: var(--text); font-weight: 800; letter-spacing: -.02em; }
+  .sx-sub{ color: var(--muted); }
+
+  .sx-tabs{
+    background: #fff;
+    border: 1px solid rgba(229,231,235,.9);
+    border-radius: 14px;
+    padding: 6px;
+    display:flex; gap:6px;
+  }
+  .sx-tab{
+    flex:1;
+    border: 0;
+    background: transparent;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 700;
+    color: var(--muted);
+    transition: .25s ease;
+  }
+  .sx-tab.active{
+    background: rgba(15,23,42,.06);
+    color: var(--text);
+  }
+
+  .form-label{ color: var(--text); font-weight: 700; font-size: .9rem; }
+  .form-control{
+    border-radius: 14px;
+    border: 1px solid rgba(229,231,235,.95);
+    padding: 12px 14px;
+    transition: .2s ease;
+  }
+  .form-control:focus{
+    border-color: rgba(14,165,164,.55);
+    box-shadow: 0 0 0 .25rem rgba(14,165,164,.18);
+  }
+
+  .sx-btn{
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-weight: 800;
+    border: 0;
+    background: linear-gradient(135deg, var(--brand), var(--brand2));
+    box-shadow: 0 12px 30px rgba(37,99,235,.18);
+    transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+  }
+  .sx-btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+  .sx-btn:active{ transform: translateY(0); }
+
+  .sx-link{
+    color: var(--brand2);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .sx-link:hover{ text-decoration: underline; }
+
+  .sx-panel{
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events:none;
+    height: 0;
+    overflow: hidden;
+    transition: .25s ease;
+  }
+  .sx-panel.show{
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events:auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .sx-mini{
+    border: 1px solid rgba(229,231,235,.9);
+    border-radius: 16px;
+    background: rgba(255,255,255,.65);
+    padding: 14px 14px;
+  }
+  .sx-mini strong{ color: var(--text); }
+  .sx-mini p{ margin:0; color: var(--muted); font-size: .95rem; }
+</style>
+
+<div class="sx-wrap">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10 col-xl-9">
+        <div class="sx-card">
+          <div class="row g-0">
+            <!-- LEFT -->
+            <div class="col-12 col-lg-6 sx-left">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="sx-badge">
+                  <span class="sx-dot"></span>
+                  <span>Sincere UI • Professional</span>
+                </div>
+                <small class="text-muted fw-semibold">v1</small>
+              </div>
+
+              <h2 class="sx-title mb-2">Welcome back</h2>
+              <p class="sx-sub mb-4">Clean, trustworthy UI with smooth transitions. No extra libraries.</p>
+
+              <div class="sx-tabs mb-4" role="tablist" aria-label="auth tabs">
+                <button type="button" id="tabLogin" class="sx-tab active" aria-selected="true">Login</button>
+                <button type="button" id="tabRegister" class="sx-tab" aria-selected="false">Register</button>
+              </div>
+
+              <!-- LOGIN -->
+              <div id="panelLogin" class="sx-panel show">
+                <form method="post" action="">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" type="email" name="email" placeholder="you@example.com" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input class="form-control" type="password" name="password" placeholder="••••••••" required>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+                      <label class="form-check-label text-muted fw-semibold" for="rememberMe">Remember me</label>
+                    </div>
+                    <a class="sx-link" href="#">Forgot?</a>
+                  </div>
+
+                  <button class="btn sx-btn text-white w-100" type="submit">Sign in</button>
+
+                </form>
+              </div>
+
+              <!-- REGISTER -->
+              <div id="panelRegister" class="sx-panel">
+                <form method="post" action="">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                    <label class="form-label">Full name</label>
+                    <input class="form-control" type="text" name="name" placeholder="Yash Gandhi" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" type="email" name="email" placeholder="you@example.com" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input class="form-control" type="password" name="password1" placeholder="Create a strong password" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Confirm password</label>
+                    <input class="form-control" type="password" name="password2" placeholder="Repeat password" required>
+                  </div>
+
+                  <button class="btn sx-btn text-white w-100" type="submit">Create account</button>
+                </form>
+              </div>
+
+              <div class="mt-4 text-center">
+                <small class="text-muted fw-semibold">
+                  By continuing, you agree to our <a class="sx-link" href="#">terms</a>.
+                </small>
+              </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="col-12 col-lg-6 sx-right">
+              <h4 class="sx-title mb-2">Why this looks “sincere”?</h4>
+              <p class="sx-sub mb-4">
+                Calm teal + deep navy give “trust & competence” vibe, perfect for interviews.
+              </p>
+
+              <div class="sx-mini mb-3">
+                <strong>✅ Smooth transitions</strong>
+                <p>Tabs switch with clean animation — no JS libraries.</p>
+              </div>
+              <div class="sx-mini mb-3">
+                <strong>✅ Bootstrap-friendly</strong>
+                <p>Works on any Bootstrap page. Minimal CSS overrides.</p>
+              </div>
+              <div class="sx-mini">
+                <strong>✅ Ready for production</strong>
+                <p>Accessible labels, focus states, clean spacing.</p>
+              </div>
+
+              <div class="mt-4">
+                <small class="text-muted fw-semibold">Tip: keep typography calm, don’t over-glow.</small>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- OPTIONAL: error messages -->
+        {% if messages %}
+          <div class="mt-3">
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const tabLogin = document.getElementById("tabLogin");
+    const tabRegister = document.getElementById("tabRegister");
+    const panelLogin = document.getElementById("panelLogin");
+    const panelRegister = document.getElementById("panelRegister");
+
+    function showLogin(){
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+      tabLogin.setAttribute("aria-selected","true");
+      tabRegister.setAttribute("aria-selected","false");
+      panelLogin.classList.add("show");
+      panelRegister.classList.remove("show");
+    }
+
+    function showRegister(){
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+      tabRegister.setAttribute("aria-selected","true");
+      tabLogin.setAttribute("aria-selected","false");
+      panelRegister.classList.add("show");
+      panelLogin.classList.remove("show");
+    }
+
+    tabLogin.addEventListener("click", showLogin);
+    tabRegister.addEventListener("click", showRegister);
+  })();
+</script>
+{% endblock %}

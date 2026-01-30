@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}Dashboard • HiredSense{% endblock %}
+
+{% block content %}
+
+<!-- ===================== -->
+<!-- Overview -->
+<!-- ===================== -->
+<div class="card mb-4">
+  <div class="card-body d-flex justify-content-between align-items-start flex-wrap gap-3">
+    <div>
+      <h2 class="mb-1">Dashboard</h2>
+      <p class="text-muted mb-1">Overview + ATS matches</p>
+      <div id="hsDashState" class="hs-status">● Ready</div>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary btn-sm" href="/api/resumes-ui/">Resumes</a>
+      <a class="btn btn-outline-secondary btn-sm" href="/api/jobs-ui/">Jobs</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- Metrics -->
+<!-- ===================== -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card text-center metric-card">
+      <div class="card-body">
+        <div class="metric-label">Resumes</div>
+        <div class="metric-value" id="hsDashResumesCount">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center metric-card">
+      <div class="card-body">
+        <div class="metric-label">Jobs</div>
+        <div class="metric-value" id="hsDashJobsCount">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center metric-card">
+      <div class="card-body">
+        <div class="metric-label">Matches</div>
+        <div class="metric-value" id="hsDashReportsCount">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- Recent Jobs / Resumes -->
+<!-- ===================== -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between">
+        <strong>Recent Jobs</strong>
+        <a href="/api/jobs-ui/" class="btn btn-sm btn-outline-secondary">View all</a>
+      </div>
+      <div class="card-body vstack gap-2" id="hsDashRecentJobs"></div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between">
+        <strong>Recent Resumes</strong>
+        <a href="/api/resumes-ui/" class="btn btn-sm btn-outline-secondary">View all</a>
+      </div>
+      <div class="card-body vstack gap-2" id="hsDashRecentResumes"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- My Matches -->
+<!-- ===================== -->
+<div class="card mb-4">
+  <div class="card-header">
+    <strong>My Matches</strong>
+    <div class="text-muted small">Explainable ATS-based job matching</div>
+  </div>
+  <div class="card-body">
+    <div id="hsMyMatchesState" class="text-muted mb-2">Loading matches…</div>
+    <div id="hsMyMatchesList" class="row g-3"></div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- Interview Questions Modal -->
+<!-- ===================== -->
+<div class="modal fade" id="hsQuestionsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Interview Questions</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="hsQuestionsBody"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const qs = (id) => document.getElementById(id);
+
+  try {
+    const r = await fetch("/api/dashboard-stats/");
+    const d = await r.json();
+
+    qs("hsDashResumesCount").textContent = d.resumes;
+    qs("hsDashJobsCount").textContent = d.jobs;
+    qs("hsDashReportsCount").textContent = d.matches;
+
+    qs("hsDashRecentJobs").innerHTML = d.recent_jobs.length
+      ? d.recent_jobs.map(j => `
+          <div class="hs-row">
+            <span>${j.title}</span>
+            <a href="/api/jobs-ui/">Open</a>
+          </div>
+        `).join("")
+      : `<div class="text-muted">No jobs</div>`;
+
+    qs("hsDashRecentResumes").innerHTML = d.recent_resumes.length
+      ? d.recent_resumes.map(r => `
+          <div class="hs-row">
+            <span>${r.title}</span>
+            ${r.file ? `<a href="/media/${r.file}" target="_blank">Open</a>` : ""}
+          </div>
+        `).join("")
+      : `<div class="text-muted">No resumes</div>`;
+
+  } catch {
+    qs("hsDashState").textContent = "Failed to load";
+    qs("hsDashState").className = "text-danger fw-semibold";
+  }
+
+  loadMyMatches();
+});
+
+async function loadMyMatches() {
+  
+  const state = document.getElementById("hsMyMatchesState");
+  const list = document.getElementById("hsMyMatchesList");
+
+  try {
+    const r = await fetch("/api/resumes/my_matches/");
+    const d = await r.json();
+    const matches = d.matches || [];
+
+    if (!matches.length) {
+      state.textContent = "No matches found.";
+      return;
+    }
+
+    state.textContent = "";
+    list.innerHTML = matches.map(m => `
+      <div class="col-md-6">
+        <div class="card h-100 ats-card">
+          <div class="small text-muted mb-1">
+  Resume: ${m.resume_title || "Your Resume"}
+</div>
+
+          <div class="card-body">
+            <h5 class="mb-1">${m.job_title}</h5>
+
+            <div class="ats-score mb-1">ATS Score: ${m.ats_score}%</div>
+            <div class="progress mb-2">
+              <div class="progress-bar bg-success" style="width:${m.ats_score}%"></div>
+            </div>
+
+            <a href="javascript:void(0)" class="small text-primary"
+              onclick="this.nextElementSibling.classList.toggle('d-none')">
+              Why this score?
+            </a>
+
+            <div class="ats-breakdown d-none small text-muted mt-1">
+              <div>Core skills: ${m.ats_breakdown?.core_skills ?? 0}</div>
+              <div>Plus skills: ${m.ats_breakdown?.plus_skills ?? 0}</div>
+              <div>Keywords: ${m.ats_breakdown?.keywords ?? 0}</div>
+              <div>Resume strength: ${m.ats_breakdown?.resume_strength ?? 0}</div>
+            </div>
+
+            <div class="mt-2">
+              <strong>Missing skills:</strong><br>
+              ${m.missing_skills.map(s =>
+                `<span class="badge bg-warning text-dark me-1 mb-1">${s}</span>`
+              ).join("")}
+            </div>
+
+            <button class="btn btn-sm btn-primary mt-3"
+              onclick='openQuestions(${JSON.stringify(m.interview_questions)})'>
+              View Interview Questions
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+  } catch {
+    state.textContent = "Error loading matches.";
+    state.className = "text-danger";
+  }
+}
+
+function openQuestions(qs) {
+  const body = document.getElementById("hsQuestionsBody");
+  body.innerHTML = qs.map((q,i)=>`
+    <div class="mb-3">
+      <h6>Q${i+1}. ${q.q}</h6>
+      <p class="text-muted"><strong>Ideal:</strong> ${q.ideal_answer}</p>
+    </div><hr>
+  `).join("");
+
+  new bootstrap.Modal(document.getElementById("hsQuestionsModal")).show();
+}
+</script>
+
+{% endblock %}
