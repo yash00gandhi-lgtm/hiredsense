@@ -20,18 +20,66 @@ from .llm import generate_ai_report
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 
+from .models import User   # ensure this import exists at top
+
 def auth_page(request):
+    if request.user.is_authenticated:
+        return redirect("/api/dashboard/")
+
     if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+        # 🔍 detect register vs login
+        is_register = "password1" in request.POST
 
-        user = authenticate(request, username=email, password=password)
+        # ================= REGISTER =================
+        if is_register:
+            name = request.POST.get("name", "").strip()
+            email = request.POST.get("email", "").strip().lower()
+            password1 = request.POST.get("password1", "")
+            password2 = request.POST.get("password2", "")
 
-        if user:
+            if not all([name, email, password1, password2]):
+                messages.error(request, "All fields are required.")
+                return render(request, "auth.html")
+
+            if password1 != password2:
+                messages.error(request, "Passwords do not match.")
+                return render(request, "auth.html")
+
+            if User.objects.filter(username=email).exists():
+                messages.error(request, "Account with this email already exists.")
+                return render(request, "auth.html")
+
+            # ✅ SAFE: Django handles hashing internally
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=password1,
+                first_name=name
+            )
+
             login(request, user)
             return redirect("/api/dashboard/")
+
+        # ================= LOGIN =================
         else:
-            messages.error(request, "Invalid credentials")
+            email = request.POST.get("email", "").strip().lower()
+            password = request.POST.get("password", "")
+
+            if not email or not password:
+                messages.error(request, "Email and password are required.")
+                return render(request, "auth.html")
+
+            user = authenticate(
+                request,
+                username=email,
+                password=password
+            )
+
+            if user is not None:
+                login(request, user)
+                return redirect("/api/dashboard/")
+            else:
+                messages.error(request, "Invalid email or password.")
 
     return render(request, "auth.html")
 
@@ -178,4 +226,4 @@ class JobViewSet(viewsets.ModelViewSet):
         return Response({
             "job_id": job.id,
             "results": rows
-        })
+        })      
