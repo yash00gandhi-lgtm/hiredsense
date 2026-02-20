@@ -1,123 +1,150 @@
 HiredSense – AI Resume ATS and Job Matching System
 
-HiredSense is a hiring support system that helps candidates understand how their resumes perform against job requirements. The platform analyzes resumes, calculates ATS scores, matches candidates with relevant jobs, identifies missing skills, and generates interview preparation questions.
+HiredSense is a production-ready backend system that simulates a real-world Applicant Tracking System (ATS).
+It helps candidates understand how well their resumes match job requirements and helps recruiters shortlist candidates efficiently.
 
-The goal of this project is to simulate a real-world Applicant Tracking System workflow in a simple and practical way.
+The platform calculates ATS scores, identifies missing skills, ranks relevant jobs, and generates interview preparation content using secure and scalable REST APIs.
 
-
+---
 
 Problem Statement
 
-Most job seekers do not know how ATS systems evaluate resumes. They apply without understanding whether their skills actually match job requirements and struggle with interview preparation.
+Most job seekers apply for jobs without knowing how ATS systems evaluate resumes.
+They are unaware of skill gaps and often struggle with interview preparation.
 
-Recruiters, on the other hand, receive many resumes and need a quick way to shortlist candidates based on skills.
+Recruiters receive a high volume of resumes and need a fast and automated way to match candidates with job requirements.
 
-HiredSense addresses both problems by automating resume evaluation and job matching.
+HiredSense solves both problems by automating resume evaluation and job matching.
 
-
+---
 
 How the System Works
 
-1. Resume Upload  
-Users upload their resumes in PDF or DOCX format. The system stores the file and extracts text from it.
+Users upload resumes in PDF format.
+The system stores the file and extracts useful text from it.
 
-2. Resume Parsing and Skill Extraction  
-The extracted text is cleaned and processed. Relevant technical skills are identified from the resume.
+Relevant skills are identified from the resume content.
 
-3. Job Creation  
-Jobs are created by an admin or recruiter. Each job contains required skills and a detailed description.
+Recruiters create job postings with required skills and descriptions.
 
-4. ATS Matching Logic  
-The system compares resume skills with job-required skills.  
-An ATS score is calculated as a percentage match.  
-Missing skills are also identified.
+The system compares resume skills with job requirements, calculates an ATS score, and identifies missing skills.
 
-5. Job Recommendations  
-Jobs are ranked based on ATS score.  
-Users see the most relevant jobs first.
+Jobs are ranked based on relevance and ATS score.
 
-6. Interview Preparation  
-Based on the matched and missing skills, interview questions are generated.  
-Ideal answers are also provided to help candidates prepare.
+Interview questions are generated based on matched and missing skills.
 
+---
 
+Authentication and Security
 
-Tech Stack Used
+The system uses JWT based authentication with access and refresh tokens.
+Session authentication is also used for the frontend UI.
 
-Backend  
-Django  
-Django REST Framework  
-Python  
-Basic machine learning logic using scikit-learn
+Role-based access control is implemented:
+Candidates can manage resumes and view matches.
+Recruiters can manage job postings.
 
-Frontend  
-Django Templates  
+All APIs are protected and require authentication.
+
+---
+
+API Documentation
+
+Interactive API documentation is available using Swagger:
+
+[http://127.0.0.1:8000/api/docs/](http://127.0.0.1:8000/api/docs/)
+
+It includes authentication endpoints, resume APIs, job APIs, and matching endpoints.
+
+---
+
+Tech Stack
+
+Backend:
+Django
+Django REST Framework
+JWT Authentication
+
+Frontend:
+Django Templates
 Bootstrap
 
-Database  
-SQLite for local development  
-PostgreSQL for production
+Database:
+SQLite for local development
+PostgreSQL ready for production
 
-Deployment  
-Render  
-Gunicorn  
+Deployment:
+Render
+Gunicorn
 WhiteNoise
 
-
+---
 
 Key Features
 
-Resume upload and parsing  
-ATS score calculation  
-Skill gap analysis  
-Job matching and ranking  
-Interview question generation  
-User authentication and authorization  
-Pagination, search, and ordering  
-Production-ready deployment setup
+Resume upload and parsing
+ATS score calculation
+Skill gap analysis
+Job ranking system
+Interview question generation
+JWT authentication
+Role-based permissions
+Search, pagination, and filtering
+Production-ready configuration
 
+---
 
+Security Best Practices
 
-Security and Best Practices
+Environment variables are used for sensitive data.
+Passwords are securely hashed.
+All APIs require authentication.
+Secrets and media files are excluded from Git.
 
-Environment variables are used for sensitive data  
-.env, media files, and database files are not committed to Git  
-Authentication is enforced on all API endpoints  
-HTTPS is handled at the production proxy level
+---
 
+Setup Instructions
 
+Clone the repository.
+Install dependencies from requirements.txt.
+Run database migrations.
+Create a superuser.
+Start the development server.
 
-Deployment Notes
+---
 
-The project is deployed on Render using Gunicorn as the WSGI server.  
-Static files are served using WhiteNoise.
+JWT Usage
 
-For demonstration purposes, user-uploaded files are stored locally.  
-In a scalable production environment, this can be extended to cloud storage such as AWS S3 or Cloudinary.
+Generate token using /api/token/
+Use Authorization header:
 
+Bearer your_access_token
 
+---
 
-Use Cases
+Main Endpoints
 
-Internship and entry-level hiring systems  
-Resume evaluation tools  
-Career guidance platforms  
-ATS workflow demonstrations
+Authentication: /api/token/
+Dashboard stats: /api/dashboard-stats/
+Resumes: /api/resumes/
+Jobs: /api/jobs/
+Job matches: /api/jobs/{id}/matches/
 
-
+---
 
 Future Improvements
 
-Recruiter dashboard  
-Integration with external job APIs  
-Resume improvement suggestions  
-Cloud-based file storage  
-Advanced NLP and ML models
+Recruiter analytics dashboard
+Resume improvement suggestions
+Cloud file storage
+Advanced NLP matching
+External job API integrations
 
-
+---
 
 Author
 
 Yash Gandhi
 
-This project was built to demonstrate real-world ATS logic, resume evaluation, and job matching workflows in a production-oriented Django application.
+This project demonstrates real-world backend development including authentication, role-based access control, scalable API design, and automated ATS workflows.
+
