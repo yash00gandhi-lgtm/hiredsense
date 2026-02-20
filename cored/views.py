@@ -13,6 +13,7 @@ from .models import Resume, Job, MatchReport
 from .serializers import ResumeSerializer, JobSerializer
 from .services import rank_jobs_for_resume, top_matches_for_job
 from .llm import generate_ai_report
+from .permissions import IsCandidate,IsRecruiter
 
 
 # ===================== PAGES =====================
@@ -133,7 +134,7 @@ def dashboard_stats(request):
 
 class ResumeViewSet(viewsets.ModelViewSet):
     serializer_class = ResumeSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsCandidate]
     parser_classes = [MultiPartParser, FormParser]
 
     filter_backends = [SearchFilter, OrderingFilter]
@@ -196,7 +197,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
 class JobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all().order_by("-created_at")
     serializer_class = JobSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsRecruiter]
 
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ["title", "description", "skills"]
