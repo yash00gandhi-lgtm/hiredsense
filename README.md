@@ -146,5 +146,21 @@ Author
 
 Yash Gandhi
 
+## 📸 Screenshots
+
+### 🔐 Authentication Page
+<p align="center">
+  <img src="auth.png" width="800"/>
+</p>
+
+### 📊 Dashboard
+<p align="center">
+  <img src="dash.png" width="800"/>
+</p>
+
+### 📄 Resume Analysis & ATS Score
+<p align="center">
+  <img src="resume.png" width="800"/>
+</p>
 This project demonstrates real-world backend development including authentication, role-based access control, scalable API design, and automated ATS workflows.
 
