@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Jobs • HiredSense{% endblock %}
+{% block topbar_title %}Jobs{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="mb-3">Jobs</h5>
+
+    <table class="table table-sm align-middle">
+      <thead class="text-muted">
+        <tr>
+          <th>Title</th>
+          <th>Skills</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody id="hsJobsBody"></tbody>
+    </table>
+
+    <div id="hsJobsState" class="text-center text-muted py-3"></div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const body = document.getElementById("hsJobsBody");
+  const state = document.getElementById("hsJobsState");
+
+  state.textContent = "Loading jobs...";
+
+  try {
+    const r = await fetch("/api/jobs/");
+    const data = await r.json();
+
+    const jobs = data.results || [];   // 🔥 IMPORTANT LINE
+
+    body.innerHTML = "";
+
+    if (!jobs.length) {
+      state.textContent = "No jobs found";
+      return;
+    }
+
+    state.style.display = "none";
+
+    jobs.forEach(j => {
+      body.insertAdjacentHTML("beforeend", `
+        <tr>
+          <td>${j.title}</td>
+          <td class="text-muted small">${j.skills || ""}</td>
+          <td class="text-muted small">${j.description || ""}</td>
+        </tr>
+      `);
+    });
+
+  } catch (e) {
+    state.textContent = "Failed to load jobs";
+  }
+});
+</script>
+
+{% endblock %}

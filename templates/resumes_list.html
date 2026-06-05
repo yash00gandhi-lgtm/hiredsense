@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Resumes • HiredSense{% endblock %}
+{% block topbar_title %}Resumes{% endblock %}
+
+{% block content %}
+
+<div class="card mb-4">
+  <div class="card-body d-flex justify-content-between align-items-start flex-wrap gap-3">
+    <div>
+      <h2 class="mb-1">Resumes</h2>
+      <p class="text-muted mb-0">Review candidates and shortlist fast.</p>
+    </div>
+
+    <button id="hsResumesAddBtn" class="btn btn-primary btn-sm">
+      + Add Resume
+    </button>
+  </div>
+
+  <div class="card-body pt-0">
+    <table class="table table-sm align-middle">
+      <thead class="text-muted">
+        <tr>
+          <th>Title</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="hsResumesBody"></tbody>
+    </table>
+
+    <div id="hsResumesState" class="text-muted text-center py-3"></div>
+  </div>
+</div>
+
+<!-- RESUME MODAL -->
+<div class="modal fade" id="hsResumeModal" tabindex="-1">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Upload Resume</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Resume title</label>
+          <input id="hsResumeTitle" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Resume file</label>
+          <input id="hsResumeFile" type="file" class="form-control"
+                 accept=".pdf,.doc,.docx">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-light btn-sm" data-bs-dismiss="modal">Cancel</button>
+        <button id="hsResumeSaveBtn" class="btn btn-primary btn-sm">
+          Upload
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  /* ---------- LIST LOAD ---------- */
+  const body = document.getElementById("hsResumesBody");
+  const state = document.getElementById("hsResumesState");
+
+  async function loadResumes(){
+    state.textContent = "Loading resumes...";
+    body.innerHTML = "";
+
+    const r = await fetch("/api/resumes/");
+    const data = await r.json();
+    const resumes = data.results || [];
+
+    if(!resumes.length){
+      state.textContent = "No resumes uploaded";
+      return;
+    }
+
+    state.textContent = "";
+    resumes.forEach(r => {
+      body.insertAdjacentHTML("beforeend", `
+        <tr>
+  <td class="fw-semibold">${r.title}</td>
+  <td>
+    ${
+      r.file_url
+        ? `<a href="${r.file_url}" target="_blank" class="btn btn-sm btn-outline-primary">
+             Open
+           </a>`
+        : `<span class="text-muted">No file</span>`
+    }
+  </td>
+</tr>
+
+      `);
+    });
+  }
+
+  loadResumes();
+
+  /* ---------- MODAL OPEN ---------- */
+  document.getElementById("hsResumesAddBtn").onclick = () => {
+    bootstrap.Modal.getOrCreateInstance(
+      document.getElementById("hsResumeModal")
+    ).show();
+  };
+
+  /* ---------- UPLOAD (FINAL FIX) ---------- */
+  document.getElementById("hsResumeSaveBtn").onclick = async () => {
+
+    const title = document.getElementById("hsResumeTitle").value.trim();
+    const file  = document.getElementById("hsResumeFile").files[0];
+
+    if(!title) return alert("Title required");
+    if(!file)  return alert("Resume file required");
+
+    const fd = new FormData();
+    fd.append("title", title);
+    fd.append("file", file);
+
+    try {
+      const res = await fetch("/api/resumes/", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: fd
+      });
+
+      if(!res.ok){
+        alert("Upload failed");
+        return;
+      }
+
+      bootstrap.Modal.getInstance(
+        document.getElementById("hsResumeModal")
+      ).hide();
+
+      location.reload();   // 🔥 GUARANTEED
+
+    } catch (e) {
+      alert("Upload error");
+      console.error(e);
+    }
+  };
+
+});
+</script>
+
+{% endblock %}
